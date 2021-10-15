@@ -20,12 +20,21 @@ EffectSizeConversion <- function(jaspResults, dataset, options) {
   
   .showOptions(jaspResults, options)
   dataset <- .readData(dataset, options)
+
+
  
 }
 
 .showOptions <- function(jaspResults, options) {
 
-  options[["variables"]] <- c(options$fisherZs, options$cohenDs, options$corrs, options$logORs, options$varMeasures)
+  options[["variables"]] <- c(options$fisherZs, 
+                              options$cohenDs, 
+                              options$corrs,
+                              options$logORs, 
+                              options$SdError, 
+                              options$Var,
+                              options$Ssize,
+                              options$TZstat)
   
   baseTable <- createJaspTable(title = "Variables to convert")
   baseTable$addColumnInfo(name = "baseTableCl", title = "Variables", type = "string")
@@ -40,6 +49,23 @@ EffectSizeConversion <- function(jaspResults, dataset, options) {
   if(!is.null(dataset)) return(dataset)
 
   return(.readDataSetToEnd(columns = options$variables))
+}
+
+.convertingEffectSizes <- function(dataset, options) {
+
+  convertedVariable<- RoBMA::combine_data(d =     dataset[ ,2], 
+                                          r =     dataset[ ,3],
+                                          z =     dataset[ ,1],
+                                          logOR = dataset[ ,4],
+                                          t =     dataset[ ,8],
+                                          se =    dataset[ ,5],
+                                          v =     dataset[ ,6],
+                                          n =     dataset[ ,7],
+                                          transformation = options$EffectSizeType)
+  
+  
+
+
 }
 
 
