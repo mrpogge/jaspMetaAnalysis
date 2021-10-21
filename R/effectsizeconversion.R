@@ -120,6 +120,9 @@ c(options$studyName
                                            transformation = options$EffectSizeType)
   
   mainTable$setData(conversionResults)
+
+  .escSaveNewColumn(conversionResults[,1])
+  .escSaveNewColumn(conversionResults[,2])
   
 
 #save
@@ -127,3 +130,8 @@ c(options$studyName
 }
 
 
+.escSaveNewColumn <- function(results) {
+
+  NULL
+
+}
