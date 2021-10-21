@@ -94,16 +94,6 @@ EffectSizeConversion <- function(jaspResults, dataset, options) {
   return()
 
 }
-c(options$studyName
-                                                   options$fisherZs, 
-                                                   options$cohenDs,
-                                                   options$corrs, 
-                                                   options$logORs, 
-                                                   options$SdError,
-                                                   options$Var,
-                                                   options$Ssize, 
-                                                   options$TZstat,
-                                                   unlist(options$inputCI)
 
 .escFillMainTable <- function(mainTable, dataset, options, ready) {
 
