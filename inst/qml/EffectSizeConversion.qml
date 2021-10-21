@@ -42,6 +42,15 @@ Form
 
         AssignedVariablesList
         {
+            name:           "studyName"
+            label:          qsTr("Study name")
+            allowedColumns: ["nominal"]
+            singleVariable: true
+
+        }
+
+        AssignedVariablesList
+        {
             name:           "fisherZs"
             label:          qsTr("Fisher's Z")
             allowedColumns: ["scale", "ordinal"]
@@ -103,6 +112,15 @@ Form
             allowedColumns: ["scale", "ordinal"]
             singleVariable: true   
         }
+
+        AssignedPairsVariablesList
+		{
+			id: 			inputCI
+			name: 			"inputCI"
+			title: 			qsTr("95% CI Lower and Upper Bound")
+			singleVariable: true
+			allowedColumns: ["scale"]
+		}
     }
 
     Group

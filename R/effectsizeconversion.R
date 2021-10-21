@@ -18,55 +18,112 @@
 #main
 EffectSizeConversion <- function(jaspResults, dataset, options) {
   
-  .showOptions(jaspResults, options)
-  dataset <- .readData(dataset, options)
+  effectSizeMeasures <- c(options$fisherZs, options$cohenDs, options$corrs, options$logORs)
+  variabilityMeasures <- c(options$SdError, options$Var, options$Ssize, options$TZstat)
+
+  ready <- any(effectSizeMeasures != "") & any(variabilityMeasures != "")
+
+  if(ready){
+    dataset = .escReadDataset(dataset, options)
+
+    .escCheckErrors(dataset, options)
+
+    .escMainTable(jaspResults, dataset, options)
+  }
 
 
- 
 }
 
-.showOptions <- function(jaspResults, options) {
+.escReadDataset <- function(dataset, options) {
 
-  options[["variables"]] <- c(options$fisherZs, 
-                              options$cohenDs, 
-                              options$corrs,
-                              options$logORs, 
-                              options$SdError, 
-                              options$Var,
-                              options$Ssize,
-                              options$TZstat)
+  if(!is.null(dataset))
+    return(dataset)
+  else
+    return(readDataSetToEnd(columns.as.numeric = c(options$studyName
+                                                   options$fisherZs, 
+                                                   options$cohenDs,
+                                                   options$corrs, 
+                                                   options$logORs, 
+                                                   options$SdError,
+                                                   options$Var,
+                                                   options$Ssize, 
+                                                   options$TZstat,
+                                                   unlist(options$inputCI))))
+
+}
+
+.escCheckErrors <- function(dataset, options) {
+
+  NULL
+
+}
+
+.escMainTable <- function(jaspResults, dataset, options, ready) {
+
+  mainTable <- createJaspTable("Effect Size Conversion Results")
+  mainTable$dependOn <- c("fisherZs", 
+                          "cohenDs",
+                          "corrs", 
+                          "logORs", 
+                          "SdError",
+                          "Var",
+                          "Ssize", 
+                          "TZstat",
+                          "EffectSizeType")
+  mainTable$addCitation("Bartoš, Maier (2020). RoBMA (Version 2.0.0) [Computer software].")
+
+  #columns
+  mainTable$addColumnInfo(name = "convertedY", title = "Converted Effect Size", type = "number")
+  mainTable$addColumnInfo(name = "convertedSE", title = "Converted Standard Error", type = "number")
+
+  if (options$studyName != "") 
+    mainTable$addColumnInfo(name = "studyNames", title = "Study names", type = "string")
   
-  baseTable <- createJaspTable(title = "Variables to convert")
-  baseTable$addColumnInfo(name = "baseTableCl", title = "Variables", type = "string")
-  baseTable[["baseTableCl"]] <- options$variables
-
-  jaspResults[["baseTable"]] <- baseTable
-
-}
-
-.readData <- function(dataset, options) {
-
-  if(!is.null(dataset)) return(dataset)
-
-  return(.readDataSetToEnd(columns = options$variables))
-}
-
-.convertingEffectSizes <- function(dataset, options) {
-
-  convertedVariable<- RoBMA::combine_data(d =     dataset[ ,2], 
-                                          r =     dataset[ ,3],
-                                          z =     dataset[ ,1],
-                                          logOR = dataset[ ,4],
-                                          t =     dataset[ ,8],
-                                          se =    dataset[ ,5],
-                                          v =     dataset[ ,6],
-                                          n =     dataset[ ,7],
-                                          transformation = options$EffectSizeType)
+  mainTable$showSpecifiedColumnsOnly <- TRUE
   
-  
+  if (ready)
+    mainTable$setExpectedSize(length(options$studyName))
 
+  jaspResults[["mainTable"]] <- mainTable
+
+  if (!ready)
+    return()
+
+  .escFillMainTable(mainTable, dataset, options)
+  
+  return()
 
 }
+c(options$studyName
+                                                   options$fisherZs, 
+                                                   options$cohenDs,
+                                                   options$corrs, 
+                                                   options$logORs, 
+                                                   options$SdError,
+                                                   options$Var,
+                                                   options$Ssize, 
+                                                   options$TZstat,
+                                                   unlist(options$inputCI)
 
+.escFillMainTable <- function(mainTable, dataset, options, ready) {
+
+  conversionResults <- RoBMA::combine_data(d =     dataset[, encodeColNames(options$fisherZs)    ],
++                                          r =     dataset[, encodeColNames(options$cohenDs)     ],
++                                          z =     dataset[, encodeColNames(options$corrs)       ],
++                                          logOR = dataset[, encodeColNames(options$logORs)      ],
++                                          se =    dataset[, encodeColNames(options$SdError)     ],
++                                          v =     dataset[, encodeColNames(options$Var)         ],
++                                          n =     dataset[, encodeColNames(options$Ssize)       ],
++                                          t =     dataset[, encodeColNames(options$TZstat)      ],
++                                          lCI =   dataset[, encodeColNames(options$inputCI[[1]])],
++                                          uCI =   dataset[, encodeColNames(options$inputCI[[2]])],
+                                           transformation = options$EffectSizeType)
+  
+  mainTable$setData(conversionResults)
+  
+
+#save
+
+}
 
 
